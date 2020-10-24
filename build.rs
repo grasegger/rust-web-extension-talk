@@ -7,6 +7,9 @@ use wasm_pack::command::build::Target;
 use wasm_pack::command::build::Build;
 use std::process::Command;
 
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
 
 pub fn main() {
     scripts().unwrap();
@@ -31,12 +34,24 @@ fn build_script(name: String, path: PathBuf){
         path: Some(path), 
         disable_dts: true, 
         target: Target::NoModules, 
-        out_name: Some(name),
+        out_name: Some(name.clone()),
         out_dir: "../../pkg".to_string(),
         ..Default::default()};
 
     let mut command = Build::try_from_opts(build_opts).unwrap();
     command.run().unwrap();
+
+    let formated_dest_path = format!("pkg/{}.js", name);
+    let js_dest_path = Path::new(&formated_dest_path);
+
+    let mut js_file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(js_dest_path)
+        .unwrap();
+
+    writeln!(js_file, "wasm_bindgen(browser.runtime.getURL('{}_bg.wasm'));", name).unwrap();
+//    writeln!(js_file, format!("wasm_bindgen({}_bg.wasm);", name));
 }
 
 fn copy_artifacts () -> Result<(), std::io::Error>  {

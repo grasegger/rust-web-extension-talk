@@ -11,5 +11,8 @@
           "github_vital_infos.js"
         ]
       }
+    ],
+    "web_accessible_resources": [
+      "github_vital_infos_bg.wasm"
     ]
   }
