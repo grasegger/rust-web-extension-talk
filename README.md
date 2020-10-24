@@ -6,3 +6,4 @@ Sadly, this project needs you to install stuff outside of rust. But don't worry,
 
 * [yarn](https://yarnpkg.com)
 * [Firefox] (https://www.mozilla.org/de/firefox/new/)
+* [web-ext] (https://www.npmjs.com/package/web-ext)
