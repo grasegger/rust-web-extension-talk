@@ -1,3 +1,9 @@
+**/target
+**/pkg
+**/node_modules
+
+**/Cargo.lock
+
+#Added by cargo
+
 /target
-/pkg
-/node_modules
