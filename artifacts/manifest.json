@@ -1,0 +1,12 @@
+{
+    "manifest_version": 2,
+    "name": "Karls Github Enhancer",
+    "version": "4.2",
+    "description": "Adds vital info to GitHub repos.",
+    "content_scripts": [
+      {
+        "matches": ["*://*.github.com/*"],
+        "js": ["github_vital_infos.js"]
+      }
+    ]
+  }
