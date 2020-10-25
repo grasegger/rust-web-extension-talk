@@ -138,7 +138,6 @@ fn build_script(name: String, path: PathBuf) {
         name
     )
     .unwrap();
-    //    writeln!(js_file, format!("wasm_bindgen({}_bg.wasm);", name));
 }
 
 fn copy_artifacts() -> Result<(), std::io::Error> {
