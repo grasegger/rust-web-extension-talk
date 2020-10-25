@@ -35,6 +35,13 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         web_accessible_resources: Vec::<JsonValue>::new(),
     };
 
+    let artifacts = Path::new("./artifacts");
+    for script in fs::read_dir(artifacts)? {
+        let script = script?;
+        let path = script.path().to_str().unwrap().replace("./artifacts/", "");
+        manifest_json["web_accessible_resources"].push(path)?;
+    }
+
     for content_script in parsed_cargo_file["package"]["metadata"]["webextension"]
         ["content_scripts"]
         .as_array()
