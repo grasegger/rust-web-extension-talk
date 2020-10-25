@@ -3,6 +3,17 @@ name = "rust-web-extension"
 version = "0.1.0"
 authors = ["Karl Grasegger <51945878+grasegger@users.noreply.github.com>"]
 edition = "2018"
+description = "Adds vital info to GitHub repos."
+
+[package.metadata.webextension]
+extension_name = "Karls Github Enhancer"
+
+[[package.metadata.webextension.content_scripts]]
+matches = ["*://*.github.com/*"]
+js = [
+    "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
+    "scripts/github_vital_infos/Cargo.toml",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,3 +22,5 @@ crate-type = ["cdylib"]
 
 [build-dependencies]
 wasm-pack = "0"
+toml = "0"
+json = "0"
