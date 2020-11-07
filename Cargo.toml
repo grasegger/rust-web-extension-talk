@@ -7,6 +7,10 @@ description = "Adds vital info to GitHub repos."
 
 [package.metadata.webextension]
 extension_name = "Karls Github Enhancer"
+gecko_id = "rust-web-extension@dev.env"
+permissions = [
+    "storage"
+]
 
 [[package.metadata.webextension.content_scripts]]
 matches = ["*://rust-linz.at/*"]

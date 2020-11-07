@@ -33,6 +33,12 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         name: parsed_cargo_file["package"]["metadata"]["webextension"]["extension_name"].as_str(),
         content_scripts: Vec::<JsonValue>::new(),
         web_accessible_resources: Vec::<JsonValue>::new(),
+        permissions: Vec::<JsonValue>::new(),
+        applications: object!{
+            gecko: object!{ 
+                id: parsed_cargo_file["package"]["metadata"]["webextension"]["gecko_id"].as_str() 
+            }
+        }
     };
 
     let artifacts = Path::new("./artifacts");
@@ -40,6 +46,10 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         let script = script?;
         let path = script.path().to_str().unwrap().replace("./artifacts/", "");
         manifest_json["web_accessible_resources"].push(path)?;
+    }
+
+    for permission in parsed_cargo_file["package"]["metadata"]["webextension"]["permissions"].as_array().unwrap() {
+        manifest_json["permissions"].push(permission.as_str())?;
     }
 
     for content_script in parsed_cargo_file["package"]["metadata"]["webextension"]
