@@ -17,9 +17,9 @@ use json::{object, stringify_pretty, JsonValue};
 use toml::Value;
 
 pub fn main() {
-    create_manifest().unwrap();
-    copy_artifacts().unwrap();
-    install_yarn();
+    create_manifest().expect("There was an error creating the manifest file.");
+    copy_artifacts().expect("I was unable to copy the sources from the artifacts folder.");
+    install_yarn().expect("I was not able to execute yarn in the pkg folder correctly.");
 }
 
 fn create_manifest() -> Result<(), Box<dyn Error>> {
@@ -126,16 +126,21 @@ fn build_script(name: String, path: PathBuf) {
     let formated_dest_path = format!("pkg/{}.js", name);
     let js_dest_path = Path::new(&formated_dest_path);
 
+    let mut old_js_file_content = fs::read_to_string(js_dest_path).unwrap();
+
+    old_js_file_content += &format!("wasm_bindgen(browser.runtime.getURL('{}_bg.wasm'));", name);
+
+
     let mut js_file = OpenOptions::new()
         .write(true)
-        .append(true)
+        .append(false)
         .open(js_dest_path)
         .unwrap();
 
-    writeln!(
+    write!(
         js_file,
-        "wasm_bindgen(browser.runtime.getURL('{}_bg.wasm'));",
-        name
+        "(function () {{ {} }})()",
+        old_js_file_content
     )
     .unwrap();
 }
@@ -157,7 +162,8 @@ fn copy_artifacts() -> Result<(), std::io::Error> {
     Ok(())
 }
 
-fn install_yarn() {
+fn install_yarn() -> Result<(), Box<dyn Error>> {
     let mut command = Command::new("yarn");
-    command.current_dir("./pkg").output().unwrap();
+    command.current_dir("./pkg").output().expect("Error while installing the yarn dependencies.");
+    Ok(())
 }
