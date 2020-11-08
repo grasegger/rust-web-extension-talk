@@ -10,7 +10,6 @@ extension_name = "Karls Github Enhancer"
 gecko_id = "rust-web-extension@dev.env"
 permissions = [
     "storage",
-    "notifications"
 ]
 
 [[package.metadata.webextension.content_scripts]]
@@ -34,6 +33,11 @@ js = [
     "scripts/github_logo_replacement/Cargo.toml",
 ]
 
+[[package.metadata.webextension.background]]
+js = [
+    "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
+    "scripts/set_real_install_date/Cargo.toml",
+]
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -43,7 +47,8 @@ js = [
 members = [
     "scripts/hello_linz",
     "scripts/github_logo_replacement",
-    "scripts/show_install_date_on_github"
+    "scripts/show_install_date_on_github",
+    "scripts/set_real_install_date",
 ]
 
 [lib]

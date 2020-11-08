@@ -1,5 +1,5 @@
 [package]
-name = "show_install_date_on_github"
+name = "set_real_install_date"
 version = "0.1.0"
 authors = ["Karl Grasegger <51945878+grasegger@users.noreply.github.com>"]
 edition = "2018"

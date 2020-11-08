@@ -8,3 +8,4 @@
 #Added by cargo
 
 /target
+.vscode/tasks.json

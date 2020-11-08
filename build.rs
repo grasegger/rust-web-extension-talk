@@ -25,9 +25,9 @@ pub fn main() {
 fn create_manifest() -> Result<(), Box<dyn Error>> {
     let cargo_file_content = read_cargo_file("Cargo.toml".to_string())?;
     let parsed_cargo_file = cargo_file_content.parse::<Value>()?;
-    let gecko_id = object!{
-        gecko: object!{ 
-            id: parsed_cargo_file["package"]["metadata"]["webextension"]["gecko_id"].as_str() 
+    let gecko_id = object! {
+        gecko: object!{
+            id: parsed_cargo_file["package"]["metadata"]["webextension"]["gecko_id"].as_str()
         }
     };
     let mut manifest_json = object! {
@@ -37,6 +37,9 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         author: parsed_cargo_file["package"]["authors"][0].as_str(),
         name: parsed_cargo_file["package"]["metadata"]["webextension"]["extension_name"].as_str(),
         content_scripts: Vec::<JsonValue>::new(),
+        background: object! {
+            scripts: Vec::<JsonValue>::new(),
+        },
         web_accessible_resources: Vec::<JsonValue>::new(),
         permissions: Vec::<JsonValue>::new(),
         applications: gecko_id.clone(),
@@ -50,7 +53,10 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         manifest_json["web_accessible_resources"].push(path)?;
     }
 
-    for permission in parsed_cargo_file["package"]["metadata"]["webextension"]["permissions"].as_array().unwrap() {
+    for permission in parsed_cargo_file["package"]["metadata"]["webextension"]["permissions"]
+        .as_array()
+        .unwrap()
+    {
         manifest_json["permissions"].push(permission.as_str())?;
     }
 
@@ -87,6 +93,29 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         }
 
         manifest_json["content_scripts"].push(script)?;
+    }
+
+    for background_script in parsed_cargo_file["package"]["metadata"]["webextension"]["background"]
+        .as_array()
+        .unwrap()
+    {
+
+        for js in background_script["js"].as_array().unwrap() {
+            let source = js.as_str().unwrap();
+            let extension = source.split(".").last().unwrap();
+
+            if extension == "toml" {
+                let package_name = get_package_name_from_path(source.into()).unwrap();
+                let source_folder = source.split("/Cargo.toml").next().unwrap();
+                build_script(package_name.clone(), Path::new(source_folder).into());
+
+                manifest_json["background"]["scripts"].push(format!("{}.js", &package_name))?;
+                manifest_json["web_accessible_resources"]
+                    .push(format!("{}_bg.wasm", &package_name))?;
+            } else {
+                manifest_json["background"]["scripts"].push(source)?;
+            }
+        }
     }
 
     let pkg_path = Path::new("pkg");
@@ -142,19 +171,13 @@ fn build_script(name: String, path: PathBuf) {
 
     old_js_file_content += &format!("wasm_bindgen(browser.runtime.getURL('{}_bg.wasm'));", name);
 
-
     let mut js_file = OpenOptions::new()
         .write(true)
         .append(false)
         .open(js_dest_path)
         .unwrap();
 
-    write!(
-        js_file,
-        "(function () {{ {} }})()",
-        old_js_file_content
-    )
-    .unwrap();
+    write!(js_file, "(function () {{ {} }})()", old_js_file_content).unwrap();
 }
 
 fn copy_artifacts() -> Result<(), std::io::Error> {
@@ -176,6 +199,9 @@ fn copy_artifacts() -> Result<(), std::io::Error> {
 
 fn install_yarn() -> Result<(), Box<dyn Error>> {
     let mut command = Command::new("yarn");
-    command.current_dir("./pkg").output().expect("Error while installing the yarn dependencies.");
+    command
+        .current_dir("./pkg")
+        .output()
+        .expect("Error while installing the yarn dependencies.");
     Ok(())
 }
