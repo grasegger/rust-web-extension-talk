@@ -45,6 +45,7 @@ js = [
 [workspace]
 
 members = [
+    "shared",
     "scripts/hello_linz",
     "scripts/github_logo_replacement",
     "scripts/show_install_date_on_github",
