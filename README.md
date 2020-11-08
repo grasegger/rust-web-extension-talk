@@ -1,4 +1,4 @@
-# A sample web extension in Rust
+# Some Web Extension Stuff In Rust
 
 ## Dependencies
 
