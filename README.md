@@ -9,7 +9,6 @@
 * [yarn](https://yarnpkg.com)
 
 
-### If you want to watch changes
-* [cargo-watch](https://github.com/passcod/cargo-watch)
+### For live reload in firefox
 * [web-ext](https://www.npmjs.com/package/web-ext)
 * [Firefox](https://www.mozilla.org/de/firefox/new/)
