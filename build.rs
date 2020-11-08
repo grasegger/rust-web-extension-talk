@@ -25,6 +25,11 @@ pub fn main() {
 fn create_manifest() -> Result<(), Box<dyn Error>> {
     let cargo_file_content = read_cargo_file("Cargo.toml".to_string())?;
     let parsed_cargo_file = cargo_file_content.parse::<Value>()?;
+    let gecko_id = object!{
+        gecko: object!{ 
+            id: parsed_cargo_file["package"]["metadata"]["webextension"]["gecko_id"].as_str() 
+        }
+    };
     let mut manifest_json = object! {
         manifest_version: 2,
         version: parsed_cargo_file["package"]["version"].as_str(),
@@ -34,11 +39,8 @@ fn create_manifest() -> Result<(), Box<dyn Error>> {
         content_scripts: Vec::<JsonValue>::new(),
         web_accessible_resources: Vec::<JsonValue>::new(),
         permissions: Vec::<JsonValue>::new(),
-        applications: object!{
-            gecko: object!{ 
-                id: parsed_cargo_file["package"]["metadata"]["webextension"]["gecko_id"].as_str() 
-            }
-        }
+        applications: gecko_id.clone(),
+        browser_specific_settings: gecko_id,
     };
 
     let artifacts = Path::new("./artifacts");

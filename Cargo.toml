@@ -9,7 +9,8 @@ description = "Adds vital info to GitHub repos."
 extension_name = "Karls Github Enhancer"
 gecko_id = "rust-web-extension@dev.env"
 permissions = [
-    "storage"
+    "storage",
+    "notifications"
 ]
 
 [[package.metadata.webextension.content_scripts]]
@@ -20,6 +21,13 @@ js = [
 ]
 
 [[package.metadata.webextension.content_scripts]]
+matches = ["https://github.com/grasegger/rust-web-extension-talk"]
+js = [
+    "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
+    "scripts/show_install_date_on_github/Cargo.toml",
+]
+
+[[package.metadata.webextension.content_scripts]]
 matches = ["*://github.com/*"]
 js = [
     "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
@@ -27,7 +35,16 @@ js = [
 ]
 
 
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+
+members = [
+    "scripts/hello_linz",
+    "scripts/github_logo_replacement",
+    "scripts/show_install_date_on_github"
+]
 
 [lib]
 crate-type = ["cdylib"]
